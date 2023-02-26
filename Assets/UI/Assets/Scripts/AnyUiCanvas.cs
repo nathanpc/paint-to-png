@@ -49,8 +49,10 @@ namespace AnyUI
             //TODO only the case if whole game object is destroyed and not the component alone
             if (Event.current != null && (Event.current.commandName == "SoftDelete" || Event.current.commandName == "Delete"))
             {
+#if false
                 //destroy rendertexture,  camera
                 AssetDatabase.DeleteAsset("Assets/AnyUIRenderTexturesAndMaterials/" + eventCamera.targetTexture.name + ".renderTexture");
+#endif
                 DestroyImmediate(eventCamera);
             }
             base.OnDestroy();

@@ -19,11 +19,13 @@ public class Mission : MonoBehaviour
    
     private PlayerMovement playerScrpt;
     private int count_ = 0;
+    private GodCan God_can;
 
     // Start is called before the first frame update
     void Start()
     {
         playerScrpt = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerMovement>();
+        God_can = GameObject.Find("GodCan").GetComponent<GodCan>();
 
         for (int i = 0; i < Missions.Count; i++)
         {
@@ -31,7 +33,7 @@ public class Mission : MonoBehaviour
         }
         AbleObjectives();
 
-       
+        
     }
 
     // Update is called once per frame
@@ -48,6 +50,7 @@ public class Mission : MonoBehaviour
         {
             final_task();
         }
+        
 
         if (Missions[currentMissionValue].isCompleted == true)
         {
@@ -140,13 +143,18 @@ public class Mission : MonoBehaviour
         for(int i = 0; i < Missions[currentMissionValue].Objects.Length; i++)
         {
 
-            enable_outline(Missions[currentMissionValue].Objects[i], true);
-            if (checkDistance(Missions[currentMissionValue].Objects[i], Missions[currentMissionValue].Place.transform)
-                && GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerMovement>().IsCanGrabbed == false)
+            enable_outline(Missions[currentMissionValue].Objects[i], 1);
+            GameObject place = Missions[currentMissionValue].Place;
+            if (place != null) 
             {
-                count++;
-                enable_outline(Missions[currentMissionValue].Objects[i], false);
+                if (checkDistance(Missions[currentMissionValue].Objects[i], Missions[currentMissionValue].Place.transform)
+                    )//& GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerMovement>().IsCanGrabbed == false) 
+                {
+                    count++;
+                    enable_outline(Missions[currentMissionValue].Objects[i], 2);
+                }
             }
+
         }
         if (count == Missions[currentMissionValue].Objects.Length)
         {
@@ -234,12 +242,10 @@ public class Mission : MonoBehaviour
             {
                 Missions[currentMissionValue].Place.SetActive(true);
             }
-            
         }
-
     }
 
-    private void enable_outline(GameObject out_object, bool set )
+    private void enable_outline(GameObject out_object, int set )
     {
         out_object.GetComponent<canScript>().onMission = set;
 
@@ -250,14 +256,15 @@ public class Mission : MonoBehaviour
         if (count_ == 0)
         {
             Missions[currentMissionValue].Objects[1].SetActive(false);
-            enable_outline(Missions[currentMissionValue].Objects[0], true);
+            enable_outline(Missions[currentMissionValue].Objects[0], 1);
             count_++;
         }
         
 
-        if (playerScrpt.IsCanGrabbed && playerScrpt.currentCan == Missions[currentMissionValue].Objects[0])
+        //if (playerScrpt.IsCanGrabbed && playerScrpt.currentCan == Missions[currentMissionValue].Objects[0])
+        if (Missions[currentMissionValue].Objects[0] != null && God_can.isHeld)
         {
-            enable_outline(Missions[currentMissionValue].Objects[0], false);
+            enable_outline(Missions[currentMissionValue].Objects[0], 2);
             MissionCompleted();
         }
 

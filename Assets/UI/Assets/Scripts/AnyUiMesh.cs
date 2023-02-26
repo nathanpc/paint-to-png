@@ -6,6 +6,7 @@ using UnityEngine.EventSystems;
 
 
 using UnityEngine.UI;
+using UnityEngine.XR.Interaction.Toolkit;
 
 namespace AnyUI
 {
@@ -34,9 +35,11 @@ namespace AnyUI
         public bool UseMaterialLayering = true;
 		[Tooltip("If you need a camera other than the 'Main Camera' to interact with the projected canvas, set it here")]
         public Camera UseCamera;
-		
-        
-        
+        public LineRenderer theLine;
+
+
+        private bool useVR = false;//true;
+
         public override Camera eventCamera
         {
             get
@@ -67,31 +70,18 @@ namespace AnyUI
 
         public override void Raycast(PointerEventData eventData, List<RaycastResult> resultAppendList)
         {
+            if (useVR) 
+            {
+                VR_UIRaycast(eventData, resultAppendList);
+            }
+
             Collider c = GetComponent<Collider>();
-#if VRTK_VERSION_3_2_1_OR_NEWER
-            
-            RaycastResult current = eventData.pointerCurrentRaycast;
-            RaycastResult press = eventData.pointerPressRaycast;
-            
+
+			Ray rCurrent = eventCamera.ScreenPointToRay(eventData.position);
+			Ray rLast = eventCamera.ScreenPointToRay(eventData.position - eventData.delta);
+			Ray rPress = eventCamera.ScreenPointToRay(eventData.pressPosition);
 
 
-
-            Ray rCurrent = new Ray(current.worldPosition, current.worldNormal);
-            Ray rLast = new Ray(vrtkLastPointerPos, vrtkLastPointerDir);
-            Ray rPress = new Ray(press.worldPosition, press.worldNormal);
-
-            vrtkLastPointerPos = current.worldPosition == Vector3.zero ? vrtkLastPointerPos : current.worldPosition;
-            vrtkLastPointerDir = current.worldNormal == Vector3.zero ? vrtkLastPointerDir : current.worldNormal;
-
-
-            //make the canvas "valid" for VRTK_VRInputModule.ValidElement(...) method
-            if (CanvasToProject.GetComponent<AnyUiFakeVRTKCanvas>() == null)
-                CanvasToProject.gameObject.AddComponent<AnyUiFakeVRTKCanvas>();
-#else
-            Ray rCurrent = eventCamera.ScreenPointToRay(eventData.position);
-            Ray rLast = eventCamera.ScreenPointToRay(eventData.position - eventData.delta);
-            Ray rPress = eventCamera.ScreenPointToRay(eventData.pressPosition);
-#endif
             RaycastHit i;
 
             receiver.InputPossible = false;
@@ -133,53 +123,70 @@ namespace AnyUI
             }
         }
 
+        private void VR_UIRaycast(PointerEventData eventData, List<RaycastResult> resultAppendList)
+        {
+            Collider c = GetComponent<Collider>();
+
+            GameObject rightHand = GameObject.FindWithTag("RightHand");
+            if (rightHand == null)
+                return;
+
+            // rCurrent needs the right hand
+            Ray rCurrent = eventCamera.ScreenPointToRay(rightHand.transform.forward);
+            //Ray rPress = eventCamera.ScreenPointToRay(eventData.pressPosition);
+
+            // TODO: get position of either hands forward vector and stick it above with a distance
+
+            RaycastHit i;
+
+            receiver.InputPossible = false;
+            //perform raycast against this object, append results
+            if (rCurrent.direction != Vector3.zero && c.Raycast(rCurrent, out i, float.MaxValue)) {
+                //hit, tell canvas
+                receiver.InputPossible = true;
+
+                PointerEventData pData = eventData;
+
+                Vector2 guiPos = i.textureCoord;
+                Vector3 screenPoint = receiver.eventCamera.ViewportToScreenPoint(guiPos);
+                //update hover position
+                pData.position = new Vector2(screenPoint.x, screenPoint.y);
+
+
+                //update press position
+                //if (rPress.direction != Vector3.zero && c.Raycast(rPress, out i, float.MaxValue)) {
+                //    guiPos = i.textureCoord;
+                //    screenPoint = receiver.eventCamera.ViewportToScreenPoint(guiPos);
+                //    pData.pressPosition = new Vector2(screenPoint.x, screenPoint.y);
+                //}
+
+                List<RaycastResult> results = new List<RaycastResult>();
+                receiver.setPointerEventDataHashMask(pData.GetHashCode());
+                //continue raycast on GUI
+                receiver.Raycast(pData, results);
+                resultAppendList.AddRange(results);
+            }
+        }
+
+
+        private bool GetVRXButton() {
+            var leftHandedControllers = new List<UnityEngine.XR.InputDevice>();
+            var desiredCharacteristics = UnityEngine.XR.InputDeviceCharacteristics.HeldInHand | UnityEngine.XR.InputDeviceCharacteristics.Controller;
+            UnityEngine.XR.InputDevices.GetDevicesWithCharacteristics(desiredCharacteristics, leftHandedControllers);
+
+            bool isXPressed = false;
+            foreach (var device in leftHandedControllers) {
+                if (device.IsPressed(UnityEngine.XR.Interaction.Toolkit.InputHelpers.Button.TriggerButton, out isXPressed))
+                    break;
+            }
+
+            return isXPressed;
+        }
+        private Ray rayFromHand() {
+            return new Ray();
+		}
+
     }
-#if VRTK_VERSION_3_2_1_OR_NEWER
-
-    public class AnyUiFakeVRTKCanvas : VRTK.VRTK_UICanvas
-    {
-
-        protected override void OnEnable()
-        {
-        }
-
-        protected override void OnDisable()
-        {
-        }
-
-        protected override void OnDestroy()
-        {
-        }
-
-        protected override void OnTriggerEnter(Collider collider)
-        {
-           
-        }
-
-        protected override void OnTriggerExit(Collider collider)
-        {
-           
-        }
-
-        protected override void SetupCanvas()
-        {
-        }
-
-        protected override IEnumerator CreateDraggablePanel(Canvas canvas, Vector2 canvasSize)
-        {
-            yield return null;
-        }
-
-        protected override void CreateActivator(Canvas canvas, Vector2 canvasSize)
-        {
-            
-        }
-
-        protected override void RemoveCanvas()
-        {
-            
-        }
-    }
-#endif
+    
 
 }

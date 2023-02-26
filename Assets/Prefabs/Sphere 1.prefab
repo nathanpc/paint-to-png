@@ -365,5 +365,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ClosingDistance: 10
-  Objective: {fileID: 7384667168492517941}
   Cillinder: {fileID: 3254497112041942956}
