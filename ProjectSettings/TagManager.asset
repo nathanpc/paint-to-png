@@ -3,14 +3,7 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags:
-  - block
-  - Music
-  - Can
-  - Objective
-  - menu_place
-  - go_ui_place
-  - RightHand
+  tags: []
   layers:
   - Default
   - TransparentFX
@@ -18,8 +11,8 @@ TagManager:
   - 
   - Water
   - UI
-  - Player
-  - Cans
+  - 
+  - 
   - 
   - 
   - 
