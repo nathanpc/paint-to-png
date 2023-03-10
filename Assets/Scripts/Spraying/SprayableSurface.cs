@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
+using static UnityEngine.UI.Image;
 
 /// <summary>
 /// Handles surfaces that are sprayable and paints its texture.
@@ -10,16 +11,21 @@ public class SprayableSurface : MonoBehaviour
 {
 	public int brushDiameter = 10;
 	public int textureResolutionMultiplier = 10;
-
-	private Texture2D sprayTexture;
+	
+    private Texture2D sprayTexture;
 
 	// Start is called before the first frame update
 	void Start()
-    {
-		// Create our runtime texture.
+	{
+        // Create our runtime texture.
         Vector3 meshSize = GetComponent<MeshFilter>().mesh.bounds.size *
-            textureResolutionMultiplier;
-        sprayTexture = new Texture2D((int)meshSize.x, (int)meshSize.z);
+			textureResolutionMultiplier;
+		sprayTexture = new Texture2D((int)meshSize.x, (int)meshSize.z);
+        Color[] fill = new Color[sprayTexture.width * sprayTexture.height];
+        for (int i = 0; i < fill.Length; ++i)
+            fill[i] = new Color(0, 0, 0, 0);
+        sprayTexture.SetPixels(fill);
+        sprayTexture.Apply();
 
 		// Set our texture to the renderer.
 		GetComponent<Renderer>().material.mainTexture = sprayTexture;
@@ -31,35 +37,68 @@ public class SprayableSurface : MonoBehaviour
 		
 	}
 
-	public void HitSurface(RaycastHit hit)
+	/// <summary>
+	/// Paints the surface based on a raycast hit.
+	/// </summary>
+	/// <param name="hit">Raycast that generated the collision.</param>
+	public void PaintSurface(RaycastHit hit)
 	{
 		// Determine where the texture got hit.
 		Vector2 pixelUV = hit.textureCoord;
 		pixelUV.x *= sprayTexture.width;
 		pixelUV.y *= sprayTexture.height;
 
-		for (int i = 0; i < brushDiameter; i++)
-		{
-			int x = (int)pixelUV.x;
-			int y = (int)pixelUV.y;
+		// Draw a filled circle.
+		DrawFilledCircle(pixelUV);
 
-			//Increment the X and Y
-			x += i;
-			y += i;
-
-			//Apply
-			sprayTexture.SetPixel(x, y, Color.red);
-
-			//De-increment the X and Y
-			x = (int)pixelUV.x;
-			y = (int)pixelUV.y;
-
-			x -= i;
-			y -= i;
-
-			//Apply
-			sprayTexture.SetPixel(x, y, Color.red);
-		}
-		sprayTexture.Apply();
+        // Apply the changes to the texture itself.
+        sprayTexture.Apply();
 	}
+
+    /// <summary>
+    /// Draws a filled circle in the object's texture.
+    /// </summary>
+    /// <param name="origin">Center of the circle.</param>
+	/// <see cref="https://stackoverflow.com/a/14976268/126353"/>
+    void DrawFilledCircle(Vector2 origin)
+    {
+		int x0 = (int)origin.x;
+		int y0 = (int)origin.y;
+		int radius = brushDiameter / 2;
+		Color color = Color.red;
+
+        int x = radius;
+        int y = 0;
+        int xChange = 1 - (radius << 1);
+        int yChange = 0;
+        int radiusError = 0;
+
+        while (x >= y)
+        {
+			// Paint Y displacement.
+            for (int i = x0 - x; i <= x0 + x; i++)
+            {
+                sprayTexture.SetPixel(i, y0 + y, color);
+                sprayTexture.SetPixel(i, y0 - y, color);
+            }
+
+			// Paint X displacement.
+            for (int i = x0 - y; i <= x0 + y; i++)
+            {
+                sprayTexture.SetPixel(i, y0 + x, color);
+                sprayTexture.SetPixel(i, y0 - x, color);
+            }
+
+			// Stuff I don't understand.
+            y++;
+            radiusError += yChange;
+            yChange += 2;
+            if (((radiusError << 1) + xChange) > 0)
+            {
+                x--;
+                radiusError += xChange;
+                xChange += 2;
+            }
+        }
+    }
 }

@@ -53,7 +53,7 @@ public class SprayController : MonoBehaviour
 				Debug.DrawRay(transform.position,
 					transform.TransformDirection(Vector3.forward) * hit.distance,
 					Color.red);
-				hit.collider.GetComponent<SprayableSurface>()?.HitSurface(hit);
+				hit.collider.GetComponent<SprayableSurface>()?.PaintSurface(hit);
 			}
 		}
 	}

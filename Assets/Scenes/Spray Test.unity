@@ -1214,8 +1214,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0801a0ad44fd4699a708a43cc03dc3f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  brushDiameter: 10
-  textureResolutionMultiplier: 10
+  brushDiameter: 100
+  textureResolutionMultiplier: 100
 --- !u!1001 &2092725228
 PrefabInstance:
   m_ObjectHideFlags: 0
