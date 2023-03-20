@@ -7,6 +7,7 @@
 		_MainTex ("Texture", 2D) = "black" {}
 		_BaseTex ("Texture", 2D) = "black" {}
 		_ForcedBlendRange("Float with range", Range(0.0, 1.0)) = 0.2
+        _Color ("Color", Color) = (1,0,1,1)
 	}
 	SubShader
 	{
@@ -49,6 +50,7 @@
 			sampler2D _MainTex;
 			sampler2D _BaseTex;
 			fixed _ForcedBlendRange;
+			fixed4 _Color;
 
 			//sampler2D _BlendTex;
 			
@@ -73,7 +75,8 @@
 				}
 				*/
 
-				return final;
+				/////return final;
+				return _Color;
 				
 				//return final;// paintedTex;
 			}
