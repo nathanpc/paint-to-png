@@ -9,12 +9,18 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(LineRenderer))]
 public class SprayController : MonoBehaviour
 {
-	public float sprayDistance = 2.0f;
+	[Header("Spray Behaviour")]
+    public int brushDiameter = 10;
+	public Color sprayColor = new Color(1, 1, 1, 1);
+
+	[Header("Internal Stuff")]
+    public float sprayDistance = 2.0f;
 	public string sprayableLayer = "Sprayable";
 	public InputAction sprayAction;
 
 	private LayerMask sprayableLayerMask;
 	private bool isSpraying = false;
+	private ParticleSystem[] particleSystems = null;
 
 	void Awake()
 	{
@@ -22,6 +28,14 @@ public class SprayController : MonoBehaviour
 		sprayAction.performed += OnSprayPerformed;
 		sprayAction.canceled += OnSprayCanceled;
 		sprayAction.Enable();
+
+		// Change the color of the particle systems.
+		particleSystems = GetComponentsInChildren<ParticleSystem>();
+        foreach (ParticleSystem particleSystem in particleSystems)
+		{
+			ParticleSystem.MainModule psMain = particleSystem.main;
+			psMain.startColor = sprayColor;
+        }
 	}
 
 	// Start is called before the first frame update
@@ -45,15 +59,14 @@ public class SprayController : MonoBehaviour
 				Color.green);
 
 			if (Physics.Raycast(transform.position,
-				transform.TransformDirection(Vector3.forward),
-				out hit,
-				sprayDistance,
-				sprayableLayerMask))
+					transform.TransformDirection(Vector3.forward), out hit,
+					sprayDistance, sprayableLayerMask))
 			{
 				Debug.DrawRay(transform.position,
 					transform.TransformDirection(Vector3.forward) * hit.distance,
 					Color.red);
-				hit.collider.GetComponent<SprayableSurface>()?.PaintSurface(hit);
+				hit.collider.GetComponent<SprayableSurface>()?.PaintSurface(
+					hit, sprayColor, brushDiameter);
 			}
 		}
 	}
@@ -66,6 +79,7 @@ public class SprayController : MonoBehaviour
 	{
 		Debug.Log("Started spraying");
 		isSpraying = true;
+		particleSystems[0].Play();
 	}
 
 	/// <summary>
@@ -76,5 +90,6 @@ public class SprayController : MonoBehaviour
 	{
 		Debug.Log("Stopped spraying");
 		isSpraying = false;
-	}
+        particleSystems[0].Stop();
+    }
 }

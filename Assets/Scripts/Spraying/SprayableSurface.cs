@@ -9,7 +9,6 @@ using static UnityEngine.UI.Image;
 /// </summary>
 public class SprayableSurface : MonoBehaviour
 {
-	public int brushDiameter = 10;
 	public int textureResolutionMultiplier = 10;
 	
     private Texture2D sprayTexture;
@@ -41,7 +40,9 @@ public class SprayableSurface : MonoBehaviour
 	/// Paints the surface based on a raycast hit.
 	/// </summary>
 	/// <param name="hit">Raycast that generated the collision.</param>
-	public void PaintSurface(RaycastHit hit)
+    /// <param name="color">Color of the paint.</param>
+    /// <param name="diameter">Diameter of the circle to be painted.</param>
+	public void PaintSurface(RaycastHit hit, Color color, int diameter)
 	{
 		// Determine where the texture got hit.
 		Vector2 pixelUV = hit.textureCoord;
@@ -49,7 +50,7 @@ public class SprayableSurface : MonoBehaviour
 		pixelUV.y *= sprayTexture.height;
 
 		// Draw a filled circle.
-		DrawFilledCircle(pixelUV);
+		DrawFilledCircle(pixelUV, color, diameter);
 
         // Apply the changes to the texture itself.
         sprayTexture.Apply();
@@ -59,13 +60,14 @@ public class SprayableSurface : MonoBehaviour
     /// Draws a filled circle in the object's texture.
     /// </summary>
     /// <param name="origin">Center of the circle.</param>
+    /// <param name="color">Circle's color.</param>
+    /// <param name="diameter">Circle's diameter diameter.</param>
 	/// <see cref="https://stackoverflow.com/a/14976268/126353"/>
-    void DrawFilledCircle(Vector2 origin)
+    protected void DrawFilledCircle(Vector2 origin, Color color, int diameter)
     {
 		int x0 = (int)origin.x;
 		int y0 = (int)origin.y;
-		int radius = brushDiameter / 2;
-		Color color = Color.red;
+		int radius = diameter / 2;
 
         int x = radius;
         int y = 0;
