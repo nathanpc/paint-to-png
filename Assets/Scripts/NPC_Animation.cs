@@ -1,14 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.AI;
-using UnityEditor.Animations;
 
 public class NPC_Animation : MonoBehaviour
 {
     private Animator controller;
 
-    enum AnimationType { Sitting, LookingDown, TalkinginPhone}
+    enum AnimationType { Sitting, LookingDown, TalkinginPhone, Walking_TalkingonPhone, Arguing , Yelling ,talking1, talking2}
     [SerializeField] private AnimationType animation_type;
 
 
@@ -29,11 +27,25 @@ public class NPC_Animation : MonoBehaviour
         {
             controller.SetTrigger("TalkingonPhone");
         }
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        else if (animation_type == AnimationType.Walking_TalkingonPhone)
+        {
+            controller.SetTrigger("Walking&TalkingonPhone");
+        }
+        else if (animation_type == AnimationType.Arguing)
+        {
+            controller.SetTrigger("Arguing");
+        }
+        else if (animation_type == AnimationType.Yelling)
+        {
+            controller.SetTrigger("Yelling");
+        }
+        else if (animation_type == AnimationType.talking1)
+        {
+            controller.SetTrigger("talking1");
+        }
+        else if (animation_type == AnimationType.talking2)
+        {
+            controller.SetTrigger("talking2");
+        }
     }
 }
