@@ -2,16 +2,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Oculus.Interaction.HandGrab;
 
 /// <summary>
 /// Controls the spray behaviour and aspects.
 /// </summary>
 [RequireComponent(typeof(LineRenderer))]
-public class SprayController : MonoBehaviour
+public class SprayController : MonoBehaviour //, IHandGrabUseDelegate
 {
 	public float sprayDistance = 2.0f;
 	public string sprayableLayer = "Sprayable";
 	public InputAction sprayAction;
+	public HandGrabUseInteractable handGrabUseInteractable;
+	public GameObject debugSprayingVisual;
 
 	private LayerMask sprayableLayerMask;
 	private bool isSpraying = false;
@@ -22,6 +25,12 @@ public class SprayController : MonoBehaviour
 		sprayAction.performed += OnSprayPerformed;
 		sprayAction.canceled += OnSprayCanceled;
 		sprayAction.Enable();
+
+		// Setup XR spray action.
+		//
+		//HandGrabInteractable grabInteractable = GetComponent<HandGrabInteractable>();
+		//XRGrabInteractable grabbable = GetComponent<XRGrabInteractable>();
+		//grabbable.activated.AddListener(TriggerPressed);
 	}
 
 	// Start is called before the first frame update
@@ -37,6 +46,9 @@ public class SprayController : MonoBehaviour
 	// Update is called once per frame
 	void Update()
 	{
+		isSpraying = handGrabUseInteractable.UseProgress > 0.1f;
+		debugSprayingVisual.SetActive(isSpraying);
+
 		if (isSpraying)
 		{
 			RaycastHit hit;
