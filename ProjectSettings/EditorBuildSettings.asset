@@ -9,7 +9,11 @@ EditorBuildSettings:
     path: Assets/Scenes/Spray Test.unity
     guid: 3b434a36f080b41d58b2d7d5909c45ba
   m_configObjects:
+    Unity.XR.Oculus.Settings: {fileID: 11400000, guid: f1f143db80d735d42a1c0b67cd3829be,
+      type: 2}
     com.unity.input.settings: {fileID: 11400000, guid: 25f471213e6dc407395c39cc124dc884,
+      type: 2}
+    com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 19d03ff05ceee4c92af8b583192cd812,
       type: 2}
     com.unity.xr.openxr.settings4: {fileID: 11400000, guid: e3275db406eee4b8481e4373dd86f1f1,
       type: 2}
