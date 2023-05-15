@@ -19,13 +19,13 @@ MonoBehaviour:
   - 
   - Water
   - UI
-  - Player
-  - Cans
+  - Ground
+  - Character
   - 
   - 
   - 
   - 
-  - 
+  - Sprayable
   - 
   - 
   - 

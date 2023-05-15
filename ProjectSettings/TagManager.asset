@@ -4,13 +4,7 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - block
-  - Music
-  - Can
-  - Objective
-  - menu_place
-  - go_ui_place
-  - RightHand
+  - CinemachineTarget
   layers:
   - Default
   - TransparentFX
@@ -18,13 +12,13 @@ TagManager:
   - 
   - Water
   - UI
-  - Player
-  - Cans
+  - Ground
+  - Character
+  - Camera
   - 
   - 
   - 
-  - 
-  - 
+  - Sprayable
   - 
   - 
   - 
