@@ -10,7 +10,7 @@ using UnityEngine.InputSystem;
 public class SprayController : MonoBehaviour
 {
 	[Header("Spray Behaviour")]
-    public int brushDiameter = 10;
+    public int brushDiameter = 20;
 	public Color sprayColor = new Color(1, 1, 1, 1);
 
 	[Header("Internal Stuff")]
