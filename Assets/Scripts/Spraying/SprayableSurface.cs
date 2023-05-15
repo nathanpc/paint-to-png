@@ -1,5 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
 using UnityEngine.Rendering;
 using static UnityEngine.UI.Image;
@@ -19,7 +18,9 @@ public class SprayableSurface : MonoBehaviour
         // Create our runtime texture.
         Vector3 meshSize = GetComponent<MeshFilter>().mesh.bounds.size *
 			textureResolutionMultiplier;
-		sprayTexture = new Texture2D((int)meshSize.x, (int)meshSize.z);
+		sprayTexture = new Texture2D(
+            (int)Math.Round(meshSize.x * transform.lossyScale.x),
+            (int)Math.Round(meshSize.z * transform.lossyScale.z));
         Color[] fill = new Color[sprayTexture.width * sprayTexture.height];
         for (int i = 0; i < fill.Length; ++i)
             fill[i] = new Color(0, 0, 0, 0);
