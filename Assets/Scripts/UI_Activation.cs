@@ -16,6 +16,7 @@ public class UI_Activation : MonoBehaviour
     [SerializeField] private GameObject LeftArrow;
     [SerializeField] private GameObject RightArrow;
 
+    private bool AImodeBool = false;
     [SerializeField] private GameObject AIModeButton;
     [SerializeField] private Material ButtonColor;
 
@@ -42,7 +43,7 @@ public class UI_Activation : MonoBehaviour
         PreviousColorAction.performed += SelectColorLeft;
         PreviousColorAction.Enable();
 
-        AIModeAction.performed += activateAIMode;
+        AIModeAction.performed += AIModeToggle;
         AIModeAction.Enable();
     }
     void Start()
@@ -51,6 +52,7 @@ public class UI_Activation : MonoBehaviour
         UI_Component.SetActive(false);
         cap.GetComponent<Outline>().enabled = false;
         updateCanColor();
+        deactivateAIMode();
     }
 
     // Update is called once per frame
@@ -82,17 +84,31 @@ public class UI_Activation : MonoBehaviour
     }
 
     //AI MODE
+    //Toggle
+    public void AIModeToggle(InputAction.CallbackContext context)
+    {
+        if (!AImodeBool)
+        {
+            activateAIMode();
+        }
+        else
+        {
+            deactivateAIMode();
+        }
+    }
     //Activation
-    public void activateAIMode(InputAction.CallbackContext context)
+    public void activateAIMode()
     {
         cap.GetComponent<Outline>().enabled = true;
         ButtonColor.color = Color.blue;
+        AImodeBool = true;
     }
     // Deactivation
     public void deactivateAIMode()
     {
         cap.GetComponent<Outline>().enabled = false;
         ButtonColor.color = Color.red;
+        AImodeBool = false;
     }
 
     //Previous Color
